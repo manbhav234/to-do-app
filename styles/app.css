@@ -141,12 +141,14 @@ header a:visited {
     position: fixed;
     top: 50%;
     left: 50%;
+    opacity: 0;
     transform: translate(-50%,-50%) scale(0);
     transition: 200ms ease-in-out;
     z-index: 10;
 }
 
 .create-todo-overlay.active {
+    opacity: 1;
     transform: translate(-50%,-50%) scale(1);
 }
 

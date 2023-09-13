@@ -22,7 +22,7 @@ const createTodoHTML = function (titleText, deadline, isComplete, index){
     
     checkBoxInput.type = 'checkbox'
     checkBoxInput.classList.add('checkbox')
-    checkBoxInput.id = `${index}`
+    mainDiv.id = `${index}`
     mainDiv.appendChild(checkBoxInput)
     
     contentDiv.classList.add('todo-content')
@@ -80,6 +80,7 @@ const addToLocalStorage = function (title,description, deadline){
     }
 }
 
+//Update Local storage based on checkbox activity
 const updateCheckLocalStorage = function(setVal, elemId) {
     let todoList = JSON.parse(localStorage.getItem('todoList'))
     todoList.forEach((value, index) => {
@@ -90,12 +91,25 @@ const updateCheckLocalStorage = function(setVal, elemId) {
     localStorage.setItem('todoList', JSON.stringify(todoList))
 }
 
+//Update local storage based on delete button activity
+const updateDelLocalStorage = function(elemId){
+    let todoList = JSON.parse(localStorage.getItem('todoList'))
+    todoList.forEach((value,index) => {
+        if(Number(elemId) === index){
+            todoList.splice(index,1)
+        }
+    })
+    localStorage.setItem('todoList', JSON.stringify(todoList))
+}
+
+
 // Delete and checkbox click listeners
 toDoContainer.addEventListener('click', function(e){
 
     //Delete Button
     if(e.target.classList.contains('delete')) {
         e.target.parentElement.remove()
+        updateDelLocalStorage(e.target.parentElement.id)
     }
 
     //Checkbox
@@ -104,13 +118,13 @@ toDoContainer.addEventListener('click', function(e){
             e.target.setAttribute('checked', 'checked')
             e.target.nextElementSibling.firstElementChild.style.textDecoration = 'line-through'
             e.target.nextElementSibling.firstElementChild.nextElementSibling.style.textDecoration = 'line-through'
-            updateCheckLocalStorage(true,e.target.id)
+            updateCheckLocalStorage(true,e.target.parentElement.id)
 
         }else {
             e.target.removeAttribute('checked')
             e.target.nextElementSibling.firstElementChild.style.textDecoration = 'none'
             e.target.nextElementSibling.firstElementChild.nextElementSibling.style.textDecoration = 'none'
-            updateCheckLocalStorage(false,e.target.id)
+            updateCheckLocalStorage(false,e.target.parentElement.id)
         }
     }
 
@@ -119,6 +133,7 @@ toDoContainer.addEventListener('click', function(e){
 // Main Create new todo buttonn click listener
 createToDoBtn.addEventListener('click', function(e){
     if(!(createOverlay.classList.contains('active'))){
+        
         createOverlay.classList.add('active')
         overlay.classList.add('active')
     }
