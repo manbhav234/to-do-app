@@ -18,11 +18,11 @@
             <button class="create-todo-btn" title="Create To-Do">+</button>
         </section>
         
-        <section class="create-todo-overlay">
-            <form action="" class="create-todo-form">
+        <section class="create-todo-overlay" id="create-todo-overlay">
+            <form action="" class="create-todo-form" id="create-todo-form">
                 <div class="create-todo-header">
                     <input type="text" placeholder="Title" class="create-todo-title">
-                    <p class="create-todo-close-btn">&times;</p>
+                    <p class="create-todo-close-btn" id="create-todo-close-btn">&times;</p>
                 </div>
                 <div class="create-todo-main">
                     <textarea name="" id="create-description" cols="30" rows="11" placeholder="Description" class="create-todo-desc"></textarea>
@@ -31,10 +31,27 @@
                         <input type="date" name="" id="create-deadline">
                     </label>
                 </div>
-                <button class="add-todo-btn" type="submit">Add To-Do</button>
+                <button class="add-todo-btn" type="submit" id="add-todo-btn">Add To-Do</button>
             </form>
-            
         </section>
+
+        <section class="create-todo-overlay" id="edit-todo-overlay">
+            <form action="" class="create-todo-form" id="edit-todo-form">
+                <div class="create-todo-header">
+                    <input type="text" placeholder="Title" class="create-todo-title" id="edit-todo-title">
+                    <p class="create-todo-close-btn" id="edit-todo-close-btn">&times;</p>
+                </div>
+                <div class="create-todo-main">
+                    <textarea name="" id="edit-description" cols="30" rows="11" placeholder="Description" class="create-todo-desc"></textarea>
+                    <label for="create-deadline">
+                        <span class="create-deadline-heading">Set Deadline : </span>
+                        <input type="date" name="" id="edit-deadline">
+                    </label>
+                </div>
+                <button class="add-todo-btn" type="submit" id="edit-todo-btn">Save Changes</button>
+            </form>
+        </section>
+
     </main>
     <div id="overlay"></div>
 </body>

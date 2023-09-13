@@ -1,11 +1,15 @@
 const createToDoBtn = document.querySelector('.create-todo-btn') // Main create todo button
 const toDoContainer = document.querySelector('.todo-container')
 
-const createOverlayCloseBtn = document.querySelector('.create-todo-close-btn') // Main create todo close button
+const createOverlayCloseBtn = document.querySelector('#create-todo-close-btn') // Main create todo close button
 const overlay = document.querySelector('#overlay') // Background dark on overlay element
-const createOverlay = document.querySelector('.create-todo-overlay') // Main create todo overlay
-const createTodoForm = document.querySelector('.create-todo-form') // Create todo form
 
+const createOverlay = document.querySelector('#create-todo-overlay') // Main create todo overlay
+const createTodoForm = document.querySelector('#create-todo-form') // Create todo form
+
+const editOverlay = document.querySelector('#edit-todo-overlay')
+const editTodoForm = document.querySelector('#edit-todo-form')
+const editOverlayCloseBtn = document.querySelector('#edit-todo-close-btn') 
 
 // Javascript for creating the to-do html
 const createTodoHTML = function (titleText, deadline, isComplete, index){
@@ -49,7 +53,9 @@ const createTodoHTML = function (titleText, deadline, isComplete, index){
     }
 
     toDoContainer.appendChild(mainDiv)
+    // todoClickListener()
 }
+
 
 // Fetching and displaying todos from the local storage
 if(localStorage.getItem('todoList')){
@@ -59,6 +65,15 @@ if(localStorage.getItem('todoList')){
         createTodoHTML(value.title, value.deadline, value.isComplete, index)
     })
 }
+
+// const updateTodoHTML = function(elemId, title, deadline){
+//     // elemId = String(elemId)
+//     // console.log(elemId)
+//     document.getElementById(elemId).firstElementChild.nextElementSibling.firstElementChild.textContent = title
+//     document.getElementById(elemId).firstElementChild.nextElementSibling.firstElementChild.nextElementSibling.textContent = deadline
+// }       
+
+
 
 //Add a todo to local storage
 const addToLocalStorage = function (title,description, deadline){
@@ -102,6 +117,32 @@ const updateDelLocalStorage = function(elemId){
     localStorage.setItem('todoList', JSON.stringify(todoList))
 }
 
+const loadContentOnOverlay = function(elemId){
+    let todoList = JSON.parse(localStorage.getItem('todoList'))
+    let todoObj = todoList[elemId]
+    const titleElem = document.querySelector('#edit-todo-title').setAttribute('value', todoObj.title)
+    const descElem = document.querySelector('#edit-description').textContent = todoObj.description
+    const deadlineElem = document.querySelector('#edit-deadline').setAttribute('value', todoObj.deadline)
+    editTodoForm.addEventListener('submit', function(e){
+        e.preventDefault()
+        const editTodoTitle = document.querySelector('#edit-todo-title').value
+        const editTodoDesc = document.querySelector('#edit-description').value
+        const editTodoDeadline = document.querySelector('#edit-deadline').value
+        todoObj.title = editTodoTitle
+        todoObj.description = editTodoDesc
+        todoObj.deadline = editTodoDeadline
+        todoList.splice(elemId,1,todoObj)
+        localStorage.setItem('todoList', JSON.stringify(todoList))
+        editOverlay.classList.remove('active')
+        overlay.classList.remove('active')
+        // updateTodoHTML(elemId, editTodoTitle,editTodoDeadline)
+    })
+}
+
+
+
+
+
 
 // Delete and checkbox click listeners
 toDoContainer.addEventListener('click', function(e){
@@ -128,20 +169,35 @@ toDoContainer.addEventListener('click', function(e){
         }
     }
 
+    if(e.target.classList.contains('todo-content')){
+        if(!(editOverlay.classList.contains('active'))){
+            editOverlay.classList.add('active')
+            overlay.classList.add('active')
+            loadContentOnOverlay(e.target.parentElement.id)
+        }
+        editOverlayCloseBtn.addEventListener('click', function(e){
+            editTodoForm.reset()
+            editOverlay.classList.remove('active')
+            overlay.classList.remove('active')
+            
+        })
+    }
+
 })
 
 // Main Create new todo buttonn click listener
 createToDoBtn.addEventListener('click', function(e){
     if(!(createOverlay.classList.contains('active'))){
-        
         createOverlay.classList.add('active')
         overlay.classList.add('active')
     }
     createOverlayCloseBtn.addEventListener('click', function(e){
+        createTodoForm.reset()
         createOverlay.classList.remove('active')
         overlay.classList.remove('active')
     })
 })
+
 
 // Adding new todo to todo-container
 createTodoForm.addEventListener('submit', function(e){
@@ -152,6 +208,5 @@ createTodoForm.addEventListener('submit', function(e){
     createTodoHTML(createTodoTitle, createTodoDeadline)
     createTodoForm.reset()
     addToLocalStorage(createTodoTitle, createTodoDesc, createTodoDeadline)
-    createOverlay.classList.remove('active')
-    overlay.classList.remove('active')
 })
+
