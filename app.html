@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/app.css">
+    <title>Document</title>
+    <script src="scripts/app.js" defer></script>
+</head>
+<body>
+    <header>
+        <a href="index.html">To-Do App</a>
+        <h1 class="user-title">Manbhav's To-Do List</h1>
+        <button class="settings-btn"><img src="images/setting.png" alt="Settings"></button>
+    </header>
+    <main>
+        <section class="todo-container">
+
+              <div class="todo">
+                <input type="checkbox" name="" class="checkbox">
+                <div class="todo-content">
+                   <h3 class="main-title">Attend Phil Class - Group Discussion</h3>
+                   <p class="main-deadline">Deadline</p>
+                </div>
+                <img src="images/dustbin-closed.png" alt="Delete" class="delete"><!--Delete button image-->
+              </div>
+
+              <div class="todo">
+                <input type="checkbox" name="" class="checkbox">
+                <div class="todo-content">
+                   <h3 class="main-title">Attend EMT Lecture</h3>
+                   <p class="main-deadline">Deadline</p>
+                </div>
+                <img src="images/dustbin-closed.png" alt="Delete" class="delete"><!--Delete button image-->
+              </div>
+
+              <div class="todo">
+                <input type="checkbox" name="" class="checkbox">
+                <div class="todo-content">
+                   <h3 class="main-title">Attend Optics Lecture</h3>
+                   <p class="main-deadline">Deadline</p>
+                </div>
+                <img src="images/dustbin-closed.png" alt="Delete" class="delete"><!--Delete button image-->
+              </div>
+
+        </section>
+        <!-- A button to create new todos which pops up an overlay -->
+        <button class="create-overlay-btn" title="Create To-Do">+</button>
+        <section class="create-todo-overlay">
+            <div class="create-todo-header">
+                <input type="text" placeholder="Title" class="create-todo-title">
+                <button class="create-todo-close-btn">&times;</button>
+            </div>
+            <div class="create-todo-main">
+                <textarea name="" id="create-description" cols="30" rows="11" placeholder="Description" class="create-todo-desc"></textarea>
+                <label for="create-deadline">
+                    <span class="create-deadline-heading">Set Deadline : </span>
+                    <input type="date" name="" id="create-deadline">
+                </label>
+            </div>
+            <button class="create-todo-btn">Add To-Do</button>
+        </section>
+    </main>
+    <div id="overlay"></div>
+</body>
+</html>
