@@ -10,6 +10,9 @@ const createTodoForm = document.querySelector('#create-todo-form') // Create tod
 const editOverlay = document.querySelector('#edit-todo-overlay')
 const editTodoForm = document.querySelector('#edit-todo-form')
 const editOverlayCloseBtn = document.querySelector('#edit-todo-close-btn') 
+ 
+
+let todoClickedForEdit;
 
 // Javascript for creating the to-do html
 const createTodoHTML = function (titleText, deadline, isComplete, index){
@@ -26,7 +29,7 @@ const createTodoHTML = function (titleText, deadline, isComplete, index){
     
     checkBoxInput.type = 'checkbox'
     checkBoxInput.classList.add('checkbox')
-    mainDiv.id = `${index}`
+    mainDiv.id = String(index)
     mainDiv.appendChild(checkBoxInput)
     
     contentDiv.classList.add('todo-content')
@@ -53,9 +56,13 @@ const createTodoHTML = function (titleText, deadline, isComplete, index){
     }
 
     toDoContainer.appendChild(mainDiv)
-    // todoClickListener()
 }
 
+const updateTodoHTML = function(elemId, title, deadline) {
+    document.getElementById(elemId).firstElementChild.nextElementSibling.firstElementChild.textContent = title
+    document.getElementById(elemId).firstElementChild.nextElementSibling.firstElementChild.nextElementSibling.textContent = deadline
+    console.log('html updated')
+}
 
 // Fetching and displaying todos from the local storage
 if(localStorage.getItem('todoList')){
@@ -65,14 +72,6 @@ if(localStorage.getItem('todoList')){
         createTodoHTML(value.title, value.deadline, value.isComplete, index)
     })
 }
-
-// const updateTodoHTML = function(elemId, title, deadline){
-//     // elemId = String(elemId)
-//     // console.log(elemId)
-//     document.getElementById(elemId).firstElementChild.nextElementSibling.firstElementChild.textContent = title
-//     document.getElementById(elemId).firstElementChild.nextElementSibling.firstElementChild.nextElementSibling.textContent = deadline
-// }       
-
 
 
 //Add a todo to local storage
@@ -87,16 +86,28 @@ const addToLocalStorage = function (title,description, deadline){
         let todoList = []
         todoList.push(newTodoObj)
         localStorage.setItem('todoList', JSON.stringify(todoList))
+        return todoList.length - 1
     }
     else{
         let todoList = JSON.parse(localStorage.getItem('todoList'))
         todoList.push(newTodoObj)
         localStorage.setItem('todoList', JSON.stringify(todoList))
+        return todoList.length - 1
     }
+}
+
+const updateLocalStorage = function (elemId, title, desc, deadline){
+    let todoList = JSON.parse(localStorage.getItem('todoList'))
+    todoList[Number(elemId)].title = title
+    todoList[Number(elemId)].description = desc
+    todoList[Number(elemId)].deadline = deadline
+    console.log(todoList)
+    localStorage.setItem('todoList', JSON.stringify(todoList))
 }
 
 //Update Local storage based on checkbox activity
 const updateCheckLocalStorage = function(setVal, elemId) {
+
     let todoList = JSON.parse(localStorage.getItem('todoList'))
     todoList.forEach((value, index) => {
         if(Number(elemId) === index){
@@ -117,34 +128,21 @@ const updateDelLocalStorage = function(elemId){
     localStorage.setItem('todoList', JSON.stringify(todoList))
 }
 
+
+
 const loadContentOnOverlay = function(elemId){
     let todoList = JSON.parse(localStorage.getItem('todoList'))
-    let todoObj = todoList[elemId]
+    let todoObj = todoList[Number(elemId)]
+    console.log(todoObj)
+    console.log(elemId)
     const titleElem = document.querySelector('#edit-todo-title').setAttribute('value', todoObj.title)
     const descElem = document.querySelector('#edit-description').textContent = todoObj.description
     const deadlineElem = document.querySelector('#edit-deadline').setAttribute('value', todoObj.deadline)
-    editTodoForm.addEventListener('submit', function(e){
-        e.preventDefault()
-        const editTodoTitle = document.querySelector('#edit-todo-title').value
-        const editTodoDesc = document.querySelector('#edit-description').value
-        const editTodoDeadline = document.querySelector('#edit-deadline').value
-        todoObj.title = editTodoTitle
-        todoObj.description = editTodoDesc
-        todoObj.deadline = editTodoDeadline
-        todoList.splice(elemId,1,todoObj)
-        localStorage.setItem('todoList', JSON.stringify(todoList))
-        editOverlay.classList.remove('active')
-        overlay.classList.remove('active')
-        // updateTodoHTML(elemId, editTodoTitle,editTodoDeadline)
-    })
 }
 
+// Event Listeners (click Listeners)
 
-
-
-
-
-// Delete and checkbox click listeners
+// Delete, checkbox and main todo body click listeners
 toDoContainer.addEventListener('click', function(e){
 
     //Delete Button
@@ -170,17 +168,14 @@ toDoContainer.addEventListener('click', function(e){
     }
 
     if(e.target.classList.contains('todo-content')){
+        todoClickedForEdit = e.target.parentElement.id 
+        const elemId = todoClickedForEdit
         if(!(editOverlay.classList.contains('active'))){
             editOverlay.classList.add('active')
             overlay.classList.add('active')
-            loadContentOnOverlay(e.target.parentElement.id)
+            loadContentOnOverlay(elemId)
         }
-        editOverlayCloseBtn.addEventListener('click', function(e){
-            editTodoForm.reset()
-            editOverlay.classList.remove('active')
-            overlay.classList.remove('active')
-            
-        })
+        
     }
 
 })
@@ -191,22 +186,48 @@ createToDoBtn.addEventListener('click', function(e){
         createOverlay.classList.add('active')
         overlay.classList.add('active')
     }
-    createOverlayCloseBtn.addEventListener('click', function(e){
-        createTodoForm.reset()
-        createOverlay.classList.remove('active')
-        overlay.classList.remove('active')
-    })
+    
+})
+
+// Create Overlay cross button click listener
+createOverlayCloseBtn.addEventListener('click', function(e){
+    createTodoForm.reset()
+    createOverlay.classList.remove('active')
+    overlay.classList.remove('active')
+})
+
+// Edit Overlay cross button click listener
+editOverlayCloseBtn.addEventListener('click', function(e){
+    editTodoForm.reset()
+    editOverlay.classList.remove('active')
+    overlay.classList.remove('active')
 })
 
 
-// Adding new todo to todo-container
+// Add todo button submit listener (new todo form submit)
 createTodoForm.addEventListener('submit', function(e){
     e.preventDefault()
     const createTodoTitle = document.querySelector('.create-todo-title').value
     const createTodoDesc = document.querySelector('#create-description').value
     const createTodoDeadline = document.querySelector('#create-deadline').value
-    createTodoHTML(createTodoTitle, createTodoDeadline)
     createTodoForm.reset()
-    addToLocalStorage(createTodoTitle, createTodoDesc, createTodoDeadline)
+    const index = addToLocalStorage(createTodoTitle, createTodoDesc, createTodoDeadline)
+    createTodoHTML(createTodoTitle, createTodoDeadline, false, index)
+    createOverlay.classList.remove('active')
+    overlay.classList.remove('active')
 })
 
+
+
+editTodoForm.addEventListener('submit', function(e){
+    e.preventDefault()
+    console.log('this works')
+    const editTodoTitle = document.querySelector('#edit-todo-title').value
+    const editTodoDesc = document.querySelector('#edit-description').value
+    const editTodoDeadline = document.querySelector('#edit-deadline').value
+    editTodoForm.reset()
+    updateLocalStorage(todoClickedForEdit, editTodoTitle, editTodoDesc, editTodoDeadline)
+    updateTodoHTML(todoClickedForEdit, editTodoTitle, editTodoDeadline)
+    editOverlay.classList.remove('active')
+    overlay.classList.remove('active')
+})
